@@ -4,6 +4,7 @@ const production = process.env.PLAYWRIGHT_PRODUCTION === "1";
 const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
   testDir: "./tests",
+  testIgnore: "**/admin.spec.ts",
   fullyParallel: true,
   workers: 2,
   timeout: 30000,

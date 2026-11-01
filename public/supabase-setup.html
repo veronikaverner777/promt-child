@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Подключение Supabase — AI PLAYGROUND</title>
+    <style>
+      body {
+        margin: 0;
+        background: #111115;
+        color: #e9e1ee;
+        font:
+          15px/1.9 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 800px;
+        margin: auto;
+        padding: 50px 24px;
+      }
+      h1 {
+        font-size: 36px;
+        line-height: 1.25;
+        letter-spacing: -1px;
+      }
+      h2 {
+        font-size: 21px;
+        color: #d2b4eb;
+        margin-top: 40px;
+      }
+      a {
+        color: #c6f590;
+      }
+      code {
+        background: #2d2338;
+        padding: 3px 6px;
+        border-radius: 4px;
+        overflow-wrap: anywhere;
+      }
+      pre {
+        white-space: pre-wrap;
+        background: #211a29;
+        border: 1px solid #4d395b;
+        border-radius: 10px;
+        padding: 20px;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+      .note {
+        border-left: 3px solid #c6f590;
+        padding: 12px 20px;
+        background: #c6f508;
+        color: #c4d6b3;
+      }
+      li {
+        padding-bottom: 9px;
+      }
+      .badge {
+        font-size: 11px;
+        color: #c6f590;
+        letter-spacing: 2px;
+      }
+      .back {
+        display: inline-block;
+        margin-bottom: 30px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="back" href="./#admin">← В админ-панель</a>
+      <div class="badge">AI PLAYGROUND / НАСТРОЙКА</div>
+      <h1>Подключим вашу<br />библиотеку идей.</h1>
+      <p>
+        Панель готова к работе с Supabase Auth, базой PostgreSQL и Storage.
+        Подключение выполняется один раз. Репозиторий остаётся
+        <strong>promt-child</strong>.
+      </p>
+      <p class="note">
+        Используйте только публичный Publishable или anon ключ. Никогда не
+        помещайте service_role, sb_secret_…, пароль базы или JWT secret в сайт.
+      </p>
+      <h2>1. Создайте проект</h2>
+      <p>
+        Откройте
+        <a
+          href="https://supabase.com/dashboard"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Supabase Dashboard</a
+        >, создайте проект. В настройках найдите <strong>Project URL</strong> и
+        <strong>API Keys → Publishable key</strong>.
+      </p>
+      <h2>2. Выполните SQL</h2>
+      <p>
+        Откройте <strong>SQL Editor → New query</strong>. Скопируйте весь
+        <a
+          href="https://github.com/veronikaverner777/promt-child/blob/main/supabase/migrations/202611010001_deepseek_catalog.sql"
+          target="_blank"
+          rel="noopener noreferrer"
+          >SQL-файл схемы</a
+        >
+        из репозитория и нажмите <strong>Run</strong>. Он создаст таблицы, RLS и
+        приватное хранилище обложек.
+      </p>
+      <h2>3. Назначьте администратора</h2>
+      <ol>
+        <li>
+          <strong>Authentication → Users → Add user → Create new user</strong>:
+          создайте email/пароль, подтвердите email через Auto Confirm User.
+        </li>
+        <li>Скопируйте <strong>User UID</strong>.</li>
+        <li>В SQL Editor выполните, заменив пример на UID:</li>
+      </ol>
+      <pre>
+insert into private.admin_users (user_id)
+values ('ВАШ-USER-UID'::uuid)
+on conflict (user_id) do nothing;</pre>
+      <p>
+        Роль назначается только через SQL. Публичной регистрации на сайте нет.
+        При необходимости отключите <strong>Allow new users to sign up</strong>.
+      </p>
+      <h2>4. Укажите адрес Auth</h2>
+      <p>
+        В <strong>Authentication → URL Configuration → Site URL</strong> задайте
+        <code>https://veronikaverner777.github.io/promt-child/</code>.
+        Используется вход по email и паролю; OAuth и magic links не требуются.
+      </p>
+      <h2>5. Добавьте публичные переменные GitHub</h2>
+      <p>
+        Откройте репозиторий →
+        <strong>Settings → Secrets and variables → Actions → Variables</strong>
+        и добавьте:
+      </p>
+      <ul>
+        <li><code>VITE_SUPABASE_URL</code> — Project URL.</li>
+        <li>
+          <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> — публичный
+          <code>sb_publishable_…</code> или старый anon ключ.
+        </li>
+      </ul>
+      <p>
+        После объединения изменений в main запустите
+        <strong
+          >Actions → Publish AI PLAYGROUND to GitHub Pages → Run workflow →
+          main</strong
+        >. Переменные встраиваются при сборке, поэтому после их изменения нужна
+        новая публикация.
+      </p>
+      <h2>6. Проверьте публикацию</h2>
+      <p>
+        Вернитесь в <a href="./#admin">админ-панель</a>, войдите и создайте
+        категорию. Добавьте промпт, проверьте предпросмотр и сохраните черновик.
+        Нажмите <strong>Опубликовать</strong> и откройте
+        <a href="./#prompts">общий каталог</a> в приватном окне. Черновики
+        посетителям недоступны.
+      </p>
+      <p>
+        Другие вкладки обновляются каждые 30 секунд и при возврате фокуса.
+        Изменения в каталоге больше не требуют пересборки сайта. Обложки:
+        JPG/PNG/WebP, до 5 МБ. Данные хранятся в Supabase, а не в браузере
+        администратора.
+      </p>
+      <p>
+        <a
+          href="https://github.com/veronikaverner777/promt-child/blob/main/SUPABASE_SETUP.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Полная инструкция, локальная настройка и диагностика →</a
+        >
+      </p>
+    </main>
+  </body>
+</html>

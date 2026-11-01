@@ -24,11 +24,15 @@ import {
   Sparkles,
   WandSparkles,
   X,
+  LibraryBig,
+  LockKeyhole,
 } from "lucide-react";
 import { projects, projectById, type ProjectId, type Category } from "./data";
 import { useStored } from "./hooks";
 import { HeroArt, ProjectArt } from "./components/Artwork";
 import { PromptBuilder } from "./components/PromptBuilder";
+import PromptCatalog from "./catalog/PromptCatalog";
+const AdminPanel = lazy(() => import("./admin/AdminPanel"));
 const CaseBattle = lazy(() => import("./projects/CaseBattle"));
 const CarStudio = lazy(() => import("./projects/CarStudio"));
 const MiniMarket = lazy(() => import("./projects/MiniMarket"));
@@ -49,10 +53,15 @@ const categories: { title: Category; icon: typeof Grid2X2 }[] = [
 function readRoute() {
   return projectById(location.hash.slice(1))?.id ?? null;
 }
+type View = "catalog" | "saved" | "guide" | "prompts" | "admin";
+function readSection(): View | null {
+  const hash = location.hash.slice(1);
+  return hash === "admin" || hash === "prompts" ? hash : null;
+}
 export default function App() {
   const [active, setActive] = useState<ProjectId | null>(readRoute);
   const [category, setCategory] = useState<Category>("Все проекты");
-  const [view, setView] = useState<"catalog" | "saved" | "guide">("catalog");
+  const [view, setView] = useState<View>(() => readSection() ?? "catalog");
   const [search, setSearch] = useState("");
   const [age, setAge] = useState("all");
   const [level, setLevel] = useState("all");
@@ -63,7 +72,12 @@ export default function App() {
   const [mobile, setMobile] = useState(false);
   const [reduced, setReduced] = useStored("reduce-motion", false);
   useEffect(() => {
-    const f = () => setActive(readRoute());
+    const f = () => {
+      setActive(readRoute());
+      const section = readSection();
+      if (section) setView(section);
+      else setView((v) => (v === "admin" || v === "prompts" ? "catalog" : v));
+    };
     window.addEventListener("hashchange", f);
     return () => window.removeEventListener("hashchange", f);
   }, []);
@@ -98,6 +112,7 @@ export default function App() {
   const navigate = (v: typeof view) => {
     back();
     setView(v);
+    if (v === "admin" || v === "prompts") location.hash = v;
     setMobile(false);
   };
   const toggleFavorite = (id: ProjectId) =>
@@ -149,6 +164,12 @@ export default function App() {
           >
             <Compass size={19} /> Обзор проектов{" "}
             <span className="nav-count">4</span>
+          </button>
+          <button
+            className={view === "prompts" && !active ? "selected" : ""}
+            onClick={() => navigate("prompts")}
+          >
+            <LibraryBig size={18} /> Промпты DeepSeek
           </button>
           <button
             className={view === "saved" && !active ? "selected" : ""}
@@ -211,6 +232,13 @@ export default function App() {
           <button className="settings-link" onClick={() => setSettings(true)}>
             <Settings2 size={18} /> Настройки <span>⌘</span>
           </button>
+          <button
+            className="admin-nav-link"
+            onClick={() => navigate("admin")}
+            aria-current={view === "admin" ? "page" : undefined}
+          >
+            <LockKeyhole size={16} /> Админ-панель
+          </button>
           <div className="sidebar-footer">
             <span className="status-dot" /> Можно всё. Начни с малого.
           </div>
@@ -234,7 +262,11 @@ export default function App() {
                   ? "Избранное"
                   : view === "guide"
                     ? "Как это работает"
-                    : "Обзор проектов")}
+                    : view === "admin"
+                      ? "Админ-панель"
+                      : view === "prompts"
+                        ? "Промпты DeepSeek"
+                        : "Обзор проектов")}
             </strong>
           </div>
           <div className="topbar-right">
@@ -301,6 +333,19 @@ export default function App() {
                 </button>
               </div>
             </>
+          ) : view === "admin" ? (
+            <Suspense
+              fallback={
+                <div className="loading">
+                  <span className="spinner" />
+                  Открываем панель…
+                </div>
+              }
+            >
+              <AdminPanel />
+            </Suspense>
+          ) : view === "prompts" ? (
+            <PromptCatalog onCreate={() => setPrompt("case")} />
           ) : view === "guide" ? (
             <Guide
               onPrompt={() => setPrompt("case")}
@@ -332,11 +377,9 @@ export default function App() {
                       <button
                         className="button primary"
                         onClick={() =>
-                          document
-                            .getElementById("catalog")
-                            ?.scrollIntoView({
-                              behavior: reduced ? "instant" : "smooth",
-                            })
+                          document.getElementById("catalog")?.scrollIntoView({
+                            behavior: reduced ? "instant" : "smooth",
+                          })
                         }
                       >
                         Исследовать проекты <ArrowDown size={17} />
@@ -557,6 +600,13 @@ export default function App() {
                   </div>
                 )}
               </section>
+              {view === "catalog" && (
+                <PromptCatalog
+                  compact
+                  onExplore={() => navigate("prompts")}
+                  onCreate={() => setPrompt("case")}
+                />
+              )}
               <section className="create-banner">
                 <div className="banner-icon">
                   <WandSparkles size={28} />
