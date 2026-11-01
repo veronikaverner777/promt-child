@@ -1,32 +1,20 @@
 # Публикация AI PLAYGROUND в GitHub Pages
 
-Ожидаемый адрес сайта: https://veronikaverner777.github.io/prompt-child/
+Ожидаемый адрес сайта: https://veronikaverner777.github.io/promt-child/
 
-## Сначала проверьте имя репозитория
+## Имя репозитория и путь сайта
 
-При подготовке публикации фактический репозиторий назывался
-`veronikaverner777/promt-child` (без второй буквы `p` в `prompt`).
-Путь Pages определяется именем репозитория. Настройка Vite `base` не создаёт
-другой адрес GitHub Pages.
-
-Чтобы получить адрес `/prompt-child/`, откройте репозиторий на GitHub,
-перейдите в **Settings → General → Repository name**, укажите `prompt-child`
-и нажмите **Rename**. Переименование не меняет содержимое сайта.
-Существующие ветки и Pull Request сохраняются. GitHub перенаправляет старый
-адрес репозитория, но для последующей работы лучше выбрать новое имя
-репозитория в настройках среды Codex.
-
-Если сохранить имя `promt-child`, адрес сайта будет оканчиваться на
-`/promt-child/`; в этом случае потребуется отдельно изменить `base` в
-`vite.config.ts` на `/promt-child/`. Текущая конфигурация подготовлена именно
-для запрошенного адреса `/prompt-child/`.
+Репозиторий: `veronikaverner777/promt-child`. Переименовывать его не нужно.
+Путь GitHub Pages соответствует имени репозитория: `/promt-child/`.
+В `vite.config.ts` задан `base: "/promt-child/"`, поэтому ссылки на скрипты,
+стили и шрифты в production-сборке используют этот префикс.
 
 ## Сохранение изменений через Pull Request
 
 Изменения подготовлены в ветке `codex/github-pages`:
 
 - `.github/workflows/deploy-pages.yml` — сборка и публикация;
-- `vite.config.ts` — `base: "/prompt-child/"`;
+- `vite.config.ts` — `base: "/promt-child/"`;
 - `DEPLOYMENT.md` — эта инструкция.
 
 Отправьте ветку в GitHub, затем на странице репозитория откройте
@@ -36,21 +24,20 @@
 Название: `Настроить автоматическую публикацию AI PLAYGROUND в GitHub Pages`.
 
 Описание: `Добавляет GitHub Actions для npm ci, npm run build и публикации dist.
-Настраивает Vite base /prompt-child/. Дизайн, содержимое и функциональность
-приложений не изменены. Для целевого адреса необходимо имя репозитория prompt-child.`
+Настраивает Vite base /promt-child/. Дизайн, содержимое и функциональность
+приложений не изменены. Репозиторий сохраняет имя promt-child.`
 
 ## Включение Pages и первая публикация
 
-1. Переименуйте репозиторий, как описано выше, чтобы имя совпадало с `base`.
-2. В **Settings → Pages → Build and deployment → Source** выберите
+1. В **Settings → Pages → Build and deployment → Source** выберите
    **GitHub Actions**. Если GitHub не позволяет включить Pages для текущего
    репозитория, выполните требование, показанное в этом разделе (доступность
    Pages для приватных репозиториев зависит от тарифа).
-3. Объедините Pull Request: **Merge pull request → Confirm merge**.
-4. Откройте вкладку **Actions** и дождитесь успешного завершения
+2. Объедините Pull Request: **Merge pull request → Confirm merge**.
+3. Откройте вкладку **Actions** и дождитесь успешного завершения
    **Publish AI PLAYGROUND to GitHub Pages**: этапов **Build website** и
    **Deploy website**.
-5. Откройте адрес сайта из **Settings → Pages** или окружения `github-pages`.
+4. Откройте адрес сайта из **Settings → Pages** или окружения `github-pages`.
 
 Если workflow уже завершился ошибкой до включения Pages, после настройки
 откройте его запуск в **Actions** и нажмите **Re-run all jobs**.
@@ -69,7 +56,7 @@ npm run build
 npm run preview
 ```
 
-Откройте путь `/prompt-child/` на сервере предпросмотра. Hash-навигация
-сохраняет этот префикс: например, `/prompt-child/#car`. Настройки приложения,
+Откройте путь `/promt-child/` на сервере предпросмотра. Hash-навигация
+сохраняет этот префикс: например, `/promt-child/#car`. Настройки приложения,
 игровой прогресс и дизайны комнат хранятся локально в браузере; они не
 переносятся между адресом среды разработки и доменом GitHub Pages.
